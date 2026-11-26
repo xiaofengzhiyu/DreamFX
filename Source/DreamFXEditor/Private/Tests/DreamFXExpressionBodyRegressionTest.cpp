@@ -2,6 +2,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
+#include "Adapter/DreamFXNiagaraAdapter.h"
 #include "DreamFXParser.h"
 #include "EdGraph/EdGraphPin.h"
 #include "Generation/DreamFXExpressions.h"
@@ -373,13 +374,13 @@ bool FDreamFXGeneratedMapPinDefaults::RunTest(const FString& Parameters)
 	}
 	TestEqual(TEXT("one map get node"), MapGetCount, 1);
 	FNiagaraVMExecutableDataId Before;
-	Generated.Script->ComputeVMCompilationId(Before, FGuid());
+	FNiagaraAdapter::ComputeScriptVMCompilationId(Generated.Script, Before, FGuid());
 	FString Error;
 	TUniquePtr<FGraphSurgeon> Surgeon = FGraphSurgeon::Create(Error);
 	if (!TestTrue(TEXT("graph backend available"), Surgeon.IsValid())) { return false; }
 	TestTrue(TEXT("finalizing existing complete pins succeeds"), Surgeon->FinalizeParameterMapPins(*Graph, Error));
 	FNiagaraVMExecutableDataId After;
-	Generated.Script->ComputeVMCompilationId(After, FGuid());
+	FNiagaraAdapter::ComputeScriptVMCompilationId(Generated.Script, After, FGuid());
 	FString BeforeKey, AfterKey;
 	Before.AppendKeyString(BeforeKey);
 	After.AppendKeyString(AfterKey);

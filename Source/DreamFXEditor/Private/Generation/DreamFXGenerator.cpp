@@ -68,7 +68,7 @@ namespace UE::DreamFX::Editor
 				Paths.AddUnique(Path);
 				Versions.Add(Path, FNiagaraAdapter::GetScriptVersion(Asset).ToStampString());
 				FNiagaraVMExecutableDataId CompileId;
-				Asset->ComputeVMCompilationId(CompileId, SelectedVersion);
+				FNiagaraAdapter::ComputeScriptVMCompilationId(Asset, CompileId, SelectedVersion);
 				FString CompileKey;
 				CompileId.AppendKeyString(CompileKey);
 				CompileInputs.Add(TEXT("module:") + Path + TEXT("@") + SelectedVersion.ToString(), HashSourceText(CompileKey));
@@ -2299,7 +2299,7 @@ namespace UE::DreamFX::Editor
 						{
 							if (!Script) { continue; }
 							FNiagaraVMExecutableDataId CompileId;
-							Script->ComputeVMCompilationId(CompileId, Current.Version);
+							FNiagaraAdapter::ComputeScriptVMCompilationId(Script, CompileId, Current.Version);
 							FString CompileKey;
 							CompileId.AppendKeyString(CompileKey);
 							SourceDependencies.Add(TEXT("parent-script:") + Script->GetPathName() + TEXT("@")

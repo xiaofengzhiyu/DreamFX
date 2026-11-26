@@ -9,6 +9,7 @@ class UNiagaraEmitter;
 class UNiagaraRendererProperties;
 class UNiagaraScript;
 class UNiagaraSystem;
+struct FNiagaraVMExecutableDataId;
 
 /**
  * The one and only place DreamFX talks to UNiagaraExternalEditUtilities.
@@ -1254,6 +1255,23 @@ namespace UE::DreamFX::Editor
 		 * so this stays inside the portability boundary.
 		 */
 		static FScriptVersion GetScriptVersion(const UNiagaraScript* Asset);
+
+		/**
+		 * UNiagaraScript::ComputeVMCompilationId, spelled once for every engine DreamFX builds on.
+		 *
+		 * UE 5.9 inserted `const ITargetPlatform* TargetPlatform` as the third parameter, before the
+		 * optional hash collector and with no default of its own, so the two-argument form every call
+		 * site used through 5.8 stops being a legal call (C2660). Nothing DreamFX asks the function
+		 * for is platform-specific -- it hashes the script's compile inputs into a dependency key --
+		 * so it passes `nullptr`, which is what the engine's own editor-side callers do
+		 * (NiagaraEditorUtilities.cpp). Keeping the spelling here means the next such change costs
+		 * this function rather than four call sites.
+		 *
+		 * Like GetScriptVersion, ComputeVMCompilationId is NIAGARA_API on the runtime type, so this
+		 * stays inside the portability boundary.
+		 */
+		static void ComputeScriptVMCompilationId(const UNiagaraScript* Script,
+			FNiagaraVMExecutableDataId& OutId, const FGuid& VersionGuid);
 
 		// --- script version selection (plan-v5 R1b) ------------------------------------------
 		//

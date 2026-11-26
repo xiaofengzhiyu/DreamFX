@@ -6337,6 +6337,20 @@ namespace UE::DreamFX::Editor
 		return Version;
 	}
 
+	void FNiagaraAdapter::ComputeScriptVMCompilationId(const UNiagaraScript* Script,
+		FNiagaraVMExecutableDataId& OutId, const FGuid& VersionGuid)
+	{
+		check(Script);
+
+		// 5.9 inserted the target platform ahead of the optional hash collector (see the header).
+		// Oldest first, so the version a reader is most likely building on comes first.
+	#if UE_VERSION_OLDER_THAN(5, 9, 0)
+		Script->ComputeVMCompilationId(OutId, VersionGuid);
+	#else
+		Script->ComputeVMCompilationId(OutId, VersionGuid, nullptr);
+	#endif
+	}
+
 	namespace
 	{
 		/** The one graph an emitter's (or the system's) stacks are all built out of. */
